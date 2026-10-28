@@ -120,7 +120,32 @@ UNION ALL SELECT 'B07', 'warn', 'Товары без категории',       
 UNION ALL SELECT 'B08', 'warn', 'Категории без перевода',           2,   (SELECT count(*) FROM core.dim_category WHERE NOT is_translated AND NOT is_unlabeled)
 UNION ALL SELECT 'B09', 'warn', 'Позиции с подозрительным сроком отгрузки (> 1 года)', 4,
                  (SELECT count(*) FROM core.fact_order_item WHERE is_shipping_limit_suspicious)
-UNION ALL SELECT 'B10', 'warn', 'Продавцы без распознанного города', 7, (SELECT count(*) FROM core.dim_seller WHERE seller_sk > 0 AND city IS NULL);
+UNION ALL SELECT 'B10', 'warn', 'Продавцы без распознанного города', 7, (SELECT count(*) FROM core.dim_seller WHERE seller_sk > 0 AND city IS NULL)
+
+-- ---------- M: витрины mart согласованы с core
+UNION ALL SELECT 'M01', 'error', 'Заказов в агрегате = заказов в витрине v_delivery',
+                 (SELECT count(*) FROM mart.v_delivery), (SELECT sum(orders) FROM mart.agg_delivery_hist)
+UNION ALL SELECT 'M02', 'error', 'v_delivery = выкупленные до 2018-09 минус без даты вручения и с нарушенной хронологией',
+                 (SELECT count(*) FROM core.fact_order o JOIN core.dim_order_status s USING (order_status)
+                   WHERE s.is_revenue AND o.purchase_date < DATE '2018-09-01'
+                     AND NOT o.is_delivered_without_date AND NOT o.is_chronology_broken),
+                 (SELECT count(*) FROM mart.v_delivery)
+UNION ALL SELECT 'M03', 'error', 'Штатов, где медиана из гистограммы ≠ медиане по факту', 0,
+                 (SELECT count(*) FROM (
+                    SELECT customer_state, percentile_disc(0.5) WITHIN GROUP (ORDER BY delivery_days) AS m
+                    FROM mart.v_delivery GROUP BY customer_state
+                  ) direct
+                  JOIN (
+                    SELECT DISTINCT ON (customer_state) customer_state, delivery_days AS m
+                    FROM (SELECT customer_state, delivery_days,
+                                 sum(orders) OVER (PARTITION BY customer_state ORDER BY delivery_days) AS running,
+                                 sum(orders) OVER (PARTITION BY customer_state) AS total
+                          FROM (SELECT customer_state, delivery_days, sum(orders) AS orders
+                                FROM mart.agg_delivery_hist GROUP BY 1, 2) h) x
+                    WHERE running >= total * 0.5
+                    ORDER BY customer_state, delivery_days
+                  ) hist USING (customer_state)
+                  WHERE direct.m <> hist.m);
 
 -- Провал любой проверки уровня error откатывает всю сборку
 DO $$
