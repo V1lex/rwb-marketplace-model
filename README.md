@@ -16,6 +16,8 @@
 
 Вспомогательное: [`docs/00_requirements.md`](docs/00_requirements.md) — разбор требований,
 [`docs/01_data_profile.md`](docs/01_data_profile.md) — профилирование данных,
+[`docs/scripts_and_sql_guide.md`](docs/scripts_and_sql_guide.md) — справочник по скриптам и SQL,
+[`docs/speech_5min.md`](docs/speech_5min.md) — текст выступления на защите,
 [`docs/task/`](docs/task/) — копия задания организаторов.
 
 ## Окружение
