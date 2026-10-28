@@ -1,0 +1,5 @@
+scale,orders_month,raw_rows,core_mb,build_s,q1_month_ms,q2_sellers_ms,q4_customers_ms,dash_state_fact_ms,dash_state_hist_ms,point_lookup_ms
+1,6749,550759,136,40,47,34,140,105,6,0
+5,33744,2609327,664,177,309,339,889,714,11,0
+10,67489,5182537,1324,480,1127,511,2850,4770,11,3
+25,168722,12902167,3332,2220,4089,2919,10813,7307,6,1
