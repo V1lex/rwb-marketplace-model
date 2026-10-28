@@ -15,6 +15,7 @@
 | 6 | Использование ИИ | [`06_ai_usage/`](06_ai_usage/) |
 
 Вспомогательное: [`docs/00_requirements.md`](docs/00_requirements.md) — разбор требований,
+[`docs/01_data_profile.md`](docs/01_data_profile.md) — профилирование данных,
 [`docs/task/`](docs/task/) — копия задания организаторов.
 
 ## Окружение
