@@ -24,7 +24,20 @@
 ([hackathon-students](https://github.com/daniilivanovp-droid/hackathon-students)).
 
 ```bash
-bash scripts/setup.sh        # PostgreSQL 16 в Docker + загрузка raw (550 759 строк)
+make all        # всё с чистого листа: окружение, модель, проверки, ответы
 ```
+
+По шагам:
+
+```bash
+make setup      # PostgreSQL 16 в Docker + загрузка raw (550 759 строк) — скрипт организаторов
+make build      # сборка модели из raw одной транзакцией + 36 самопроверок
+make dq         # результаты самопроверок
+make answers    # ответы на вопросы + сверка с контрольными цифрами
+```
+
+Если локально нет `psql`, скрипты выполняют его внутри контейнера.
+Если порт 5432 занят: поменять проброс в `docker-compose.yml`
+(так советуют организаторы) и запускать `make build PGPORT=5433`.
 
 Подключение: `postgresql://hack:hack@localhost:5432/marketplace`.
